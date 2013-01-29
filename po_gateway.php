@@ -78,7 +78,38 @@ function init_po_gateway() {
 					'yes'			=> __('Yes', 'po_gateway')
 				)
 			);
+
+			$defaults[] = array(
+				'name'		=> __('Modo Prueba','po_gateway'),
+				'desc' 		=> '',
+				'tip' 		=> __('Al activarse las transacciones serán de prueba.','po_gateway'),
+				'id' 		=> 'po_gateway-test-mode',
+				'std' 		=> 'no',
+				'type' 		=> 'checkbox',
+				'choices'	=> array(
+					'no'			=> __('No', 'po_gateway'),
+					'yes'			=> __('Yes', 'po_gateway')
+				)
+			);
+
+			$defaults[] = array(
+				'name'		=> __('ID de usuario','po_gateway'),
+				'desc' 		=> '',
+				'tip' 		=> __('Este numero lo encontrará en el correo de confirmación de la creación de su cuenta de Pagos Online.','po_gateway'),
+				'id' 		=> 'po_gateway-id',
+				'std' 		=> __('2','po_gateway'),
+				'type' 		=> 'text'
+			);
 			
+			$defaults[] = array(
+				'name'		=> __('Llave Encripción','po_gateway'),
+				'desc' 		=> '',
+				'tip' 		=> __('Consulte su llave a través del módulo administrativo del sistema dado por Pagos Online.','po_gateway'),
+				'id' 		=> 'po_gateway-key',
+				'std' 		=> __('1111111111111111','po_gateway'),
+				'type' 		=> 'text'
+			);
+
 			return $defaults;
 			
 		}
