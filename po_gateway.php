@@ -171,7 +171,7 @@ function init_po_gateway() {
 				'baseDevolucionIva'		=> '',
 
 				// Optional info for Pagos Online
-				'prueba'				=> $this->testmode,
+				'prueba'				=> ($this->testmode == 'yes') ? 1 : 0,
 				'url_respuesta'			=> '',
 				'moneda'				=> 'COP',
 				'nombreComprador'		=> "$order->billing_first_name $order->billing_last_name",
