@@ -195,8 +195,29 @@ function init_po_gateway() {
 					</button>
 					<a class="btn btn-large btn-warning" href="'.esc_url($order->get_cancel_order_url()).'">'.__('Cancel order &amp; restore cart', 'po_gateway').'</a>
 					
-				</form>';
-
+					<script type="text/javascript">
+						jQuery(function(){
+							jQuery("body").block(
+								{
+									message: "<img src=\"'.jigoshop::assets_url().'/assets/images/ajax-loader.gif\" alt=\"Redireccionando...\" />'.__('Gracias por su pedido. Ahora lo estamos redireccionando al sistema de pagos Pagos Online.', 'po_gateway').'",
+									overlayCSS:
+									{
+										background: "#000",
+										opacity: 0.6
+									},
+									css: {
+										padding:		20,
+										textAlign:	  "center",
+										color:		  "#555",
+										border:		 "3px solid #aaa",
+										backgroundColor:"#fff",
+										cursor:		 "wait"
+									}
+								});
+							jQuery("#submit_payment_form").click();
+						});
+					</script>
+					</form>';
 		}
 
 		/**
