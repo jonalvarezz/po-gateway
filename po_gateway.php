@@ -9,7 +9,7 @@ Tested up to: 3.5
 Required Jigoshop Version: 1.3
 Text Domain: po_gateway
 Domain Path: /languages/
-Author: @jonalvarezz
+Author: Tu Negocio Web en 1 dia - @jonalvarezz
 Author URI: http://tunegocioweben1dia.com
 */
 
@@ -43,16 +43,19 @@ function init_po_gateway() {
 			parent::__construct();
 
 			$this->id			= 'pagosonline';
-			$this->title 		= 'Pagos Online';			
-			$this->description 	= Jigoshop_Base::get_options()->get_option('po_gateway_description');
-	  		$this->enabled		= Jigoshop_Base::get_options()->get_option('po_gateway_enabled');
-	  		$this->id			= Jigoshop_Base::get_options()->get_option('po_gateway_id');
-	  		$this->key			= Jigoshop_Base::get_options()->get_option('po_gateway_key');
-	  		$this->testmode		= Jigoshop_Base::get_options()->get_option('po_gateway_testmode');
-
-	  		$this->liveurl 		= 'https://gateway.pagosonline.net/apps/gateway/index.html';
+			$this->liveurl 		= 'https://gateway.pagosonline.net/apps/gateway/index.html';
 			$this->testurl 		= 'https://gateway2.pagosonline.net/apps/gateway/index.html';
 
+			$this->enabled		= Jigoshop_Base::get_options()->get_option('po_gateway_enabled');
+			$this->testmode		= Jigoshop_Base::get_options()->get_option('po_gateway_testmode');
+			$this->title 		= Jigoshop_Base::get_options()->get_option('po_gateway_title');			
+			$this->description 	= Jigoshop_Base::get_options()->get_option('po_gateway_description');	  		
+	  		$this->userid		= Jigoshop_Base::get_options()->get_option('po_gateway_userid');
+	  		$this->key			= Jigoshop_Base::get_options()->get_option('po_gateway_key');	  		
+
+			// Actions
+			// add_action('init', array(&$this, 'check_ipn_response') );
+			add_action('valid-po-ipn-request', array(&$this, 'successful_request') );
 			add_action('receipt_po_gateway', array(&$this, 'receipt_page'));
 	  		
 		}
@@ -73,7 +76,7 @@ function init_po_gateway() {
 		
 			// Define the Section name for the Jigoshop_Options
 			$defaults[] = array(
-				'name' => __('PO Gateway', 'po_gateway'),
+				'name' => __('Pagos Online', 'po_gateway'),
 				'type' => 'title',
 				'desc' => __('Pagos Online Gateway for Jigoshop in Wordpress.', 'po_gateway')
 			);
@@ -106,11 +109,11 @@ function init_po_gateway() {
 			);
 
 			$defaults[] = array(
-				'name'		=> __('ID de usuario','po_gateway'),
+				'name'		=> __('Method Title','po_gateway'),
 				'desc' 		=> '',
-				'tip' 		=> __('Este numero lo encontrará en el correo de confirmación de la creación de su cuenta de Pagos Online.','po_gateway'),
-				'id' 		=> 'po_gateway_id',
-				'std' 		=> __('2','po_gateway'),
+				'tip' 		=> __('This controls the title which the user sees during checkout.','po_gateway'),
+				'id' 		=> 'po_gateway_title',
+				'std' 		=> __('Pagos Online','po_gateway'),
 				'type' 		=> 'text'
 			);
 
@@ -119,9 +122,19 @@ function init_po_gateway() {
 				'desc' 		=> '',
 				'tip' 		=> __('Esta es la descripcion que el usuario ve durante el checkout.','po_gateway'),
 				'id' 		=> 'po_gateway_description',
-				'std' 		=> __("Pagar via Pagos Online", 'po_gateway'),
+				'std' 		=> __('Pagar via Pagos Online', 'po_gateway'),
 				'type' 		=> 'longtext'
 			);
+
+			$defaults[] = array(
+				'name'		=> __('ID de usuario','po_gateway'),
+				'desc' 		=> '',
+				'tip' 		=> __('Este numero lo encontrará en el correo de confirmación de la creación de su cuenta de Pagos Online.','po_gateway'),
+				'id' 		=> 'po_gateway_userid',
+				'std' 		=> __('2','po_gateway'),
+				'type' 		=> 'text'
+			);
+		
 			
 			$defaults[] = array(
 				'name'		=> __('Llave Encripción','po_gateway'),
@@ -145,12 +158,7 @@ function init_po_gateway() {
 
 	        $gateway_url = ($this->testmode == 'yes') ? $this->testurl : $this->liveurl;
 
-			// filter redirect page
-			$checkout_redirect = apply_filters( 'jigoshop_get_checkout_redirect_page_id', jigoshop_get_page_id('thanks') );
-
 			$po_args = array(
-				'return' 				=> add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink( $checkout_redirect ))),
-				'cancel_return'			=> $order->get_cancel_order_url(),
 
 				// Pagos Online API
 				'usuarioId'				=> $this->id,
@@ -176,43 +184,15 @@ function init_po_gateway() {
 				'email'					=> $order->billing_email,
 			);
 
-			// Cart Contents
-			$item_loop = 0;
-			if (sizeof($order->items)>0) : foreach ($order->items as $item) :
-
-				$_product = $order->get_product_from_item( $item );
-
-				if ($_product->exists() && $item['qty']) :
-
-					$item_loop++;
-
-					$title = $_product->get_title();
-
-					//if variation, insert variation details into product title
-					if ($_product instanceof jigoshop_product_variation) {
-
-						$title .= ' (' . jigoshop_get_formatted_variation( $item['variation'], true) . ')';
-
-					}
-
-					$po_args['item_name_'.$item_loop] = $title;
-					$po_args['quantity_'.$item_loop] = $item['qty'];
-
-					$po_args['amount_'.$item_loop] = number_format( apply_filters( 'jigoshop_paypal_adjust_item_price' ,$_product->get_price_excluding_tax(), $item, 10, 2 ), 2); //Apparently, Paypal did not like "28.4525" as the amount. Changing that to "28.45" fixed the issue.
-				endif;
-			endforeach; endif;
-
-			$po_args = apply_filters( 'jigoshop_paypal_args', $po_args );
-
 			$po_args_array = array();
 
 			foreach ($po_args as $key => $value) {
-				$paypal_args_array[] = '<input type="hidden" name="'.esc_attr($key).'" value="'.esc_attr($value).'" />';
+				$po_args_array[] = '<input type="hidden" name="'.esc_attr($key).'" value="'.esc_attr($value).'" />';
 			}
 
-			return '<form action="'.$gateway_url.'" method="post" id="po_payment_form">
+			return '<form action="'. esc_url( $gateway_url ).'" method="post" id="po_payment_form">
 					' . implode('', $po_args_array) . '
-					<input type="submit" class="button-alt" id="submit_po_payment_form" value="'.__('Pagar via Pagos Online', 'jigoshop').'" /> <a class="button cancel" href="'.esc_url($order->get_cancel_order_url()).'">'.__('Cancel order &amp; restore cart', 'po_gateway').'</a>
+					<input type="submit" class="button-alt" id="submit_payment_form" value="'.__('Pagar via Pagos Online', 'po_gateway').'" /> <a class="button cancel" href="'.esc_url($order->get_cancel_order_url()).'">'.__('Cancel order &amp; restore cart', 'po_gateway').'</a>
 					<script type="text/javascript">
 						jQuery(function(){
 							jQuery("body").block(
@@ -232,22 +212,10 @@ function init_po_gateway() {
 										cursor:		 "wait"
 									}
 								});
-							jQuery("#submit_po_payment_form").click();
+							jQuery("#submit_payment_form").click();
 						});
 					</script>
 				</form>';
-
-		}
-
-		
-		/**
-		 * receipt_page
-		 **/
-		function receipt_page( $order ) {
-
-			echo '<p>'.__('Gracias por tu orden, por favor de clic en el botón de abajo para pagar por medio de Pagos Online.', 'po_gateway').'</p>';
-
-			echo $this->generate_po_form( $order );
 
 		}
 
@@ -265,23 +233,31 @@ function init_po_gateway() {
 
 		}
 		
-		public function admin_scripts() {
-	    	?>
-			<script type="text/javascript">
-				/*<![CDATA[*/
-					jQuery(function($) {
-						jQuery('input#po_gateway_testmode').click( function() {;
-							if (jQuery(this).is(':checked')) {
-								jQuery(this).parent().parent().next('tr').show();
-							} else {
-								jQuery(this).parent().parent().next('tr').hide();
-							}
-						});
-					});
-				/*]]>*/
-			</script>
-	    	<?php
-	    }
+		/**
+		 * receipt_page
+		 **/
+		function receipt_page( $order ) {
+
+			echo '<p>'.__('Gracias por tu orden, por favor de clic en el botón de abajo para pagar por medio de Pagos Online.', 'po_gateway').'</p>';
+
+			echo $this->generate_po_form( $order );
+
+		}
+
+		/**
+		 * Successful Payment!
+		 **/
+		function successful_request( $posted ) {			
+			
+
+		}
+
+		/**
+		 * There are no payment fields for paypal, but we want to show the description if set.
+		 **/
+		function payment_fields() {
+			if ($this->description) echo wpautop(wptexturize($this->description));
+		}
 		 
 	}   /* End of Class definition for the Gateway */
 	
