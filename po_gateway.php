@@ -163,7 +163,7 @@ function init_po_gateway() {
 				'usuarioId'				=> $this->userid,
 				'firma'					=> $this->key,
 				'refVenta'				=> $order->order_key,
-				'descripcion'			=> '',
+				'descripcion'			=> $this->get_articles_detail($order),
 				'valor'					=> $order->order_total,				
 				'url_respuesta'			=> '',
 				'moneda'				=> 'COP',
@@ -257,6 +257,35 @@ function init_po_gateway() {
 			return md5( $sign_s );
 		}
 		 
+
+		function get_articles_detail($order) {			
+			$out  = 'Tu compra';
+			$out .= "\n";
+			if (sizeof($order->items)>0) : foreach ($order->items as $item) :
+
+				$_product = $order->get_product_from_item( $item );
+
+				if ($_product->exists() && $item['qty']) :
+
+					$title = $_product->get_title();
+
+					//if variation, insert variation details into product title
+					if ($_product instanceof jigoshop_product_variation) {
+
+						$title .= ' (' . jigoshop_get_formatted_variation( $item['variation'], true) . ')';
+
+					}
+					$amount = number_format( apply_filters( 'jigoshop_paypal_adjust_item_price' ,$_product->get_price_excluding_tax(), $item, 10, 2 ), 2);
+
+					$out .= $item['qty'];
+					$out .= " $title ($amount c/u)\n";
+
+				endif;
+			endforeach; endif;
+
+			return $out;
+		}
+
 	}   /* End of Class definition for the Gateway */
 	
 }   /* End of init gateway function */
