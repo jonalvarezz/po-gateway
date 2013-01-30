@@ -43,6 +43,7 @@ function init_po_gateway() {
 			parent::__construct();
 
 			$this->id			= 'pagosonline';
+			$this->icon 		= plugins_url( 'images/pagosonline_logo.png', __FILE__ );
 			$this->liveurl 		= 'https://gateway.pagosonline.net/apps/gateway/index.html';
 			$this->testurl 		= 'https://gateway2.pagosonline.net/apps/gateway/index.html';
 
@@ -162,15 +163,19 @@ function init_po_gateway() {
 				'usuarioId'				=> $this->userid,
 				'firma'					=> $this->key,
 				'refVenta'				=> $order->order_key,
-				'descripcion'			=> 'descripcion',
-				'valor'					=> $order->order_total,
-				'iva'					=> '0',
-				'baseDevolucionIva'		=> $order->order_total,
+				'descripcion'			=> '',
+				'valor'					=> $order->order_total,				
 				'url_respuesta'			=> '',
 				'moneda'				=> 'COP',
 
-				// Address info
-				'first_name'			=> $order->billing_first_name,
+				// Let Pagos Online system generate iva and baseDevolucionIva automatically.
+				'iva'					=> '',
+				'baseDevolucionIva'		=> '',
+
+				// Optional info for Pagos Online
+				'nombreComprador'		=> $order->billing_first_name,
+				'emailComprador'		=> $order->billing_email,
+
 				'last_name'				=> $order->billing_last_name,
 				'company'				=> $order->billing_company,
 				'address1'				=> $order->billing_address_1,
@@ -179,7 +184,7 @@ function init_po_gateway() {
 				'state'					=> $order->billing_state,
 				'zip'					=> $order->billing_postcode,
 				'country'				=> $order->billing_country,
-				'email'					=> $order->billing_email,
+				
 			);
 
 			$po_args['firma'] = $this->gen_digital_sign($po_args);
