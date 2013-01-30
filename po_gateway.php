@@ -165,25 +165,19 @@ function init_po_gateway() {
 				'refVenta'				=> $order->order_key,
 				'descripcion'			=> $this->get_articles_detail($order),
 				'valor'					=> $order->order_total,				
-				'url_respuesta'			=> '',
-				'moneda'				=> 'COP',
 
 				// Let Pagos Online system generate iva and baseDevolucionIva automatically.
 				'iva'					=> '',
 				'baseDevolucionIva'		=> '',
 
 				// Optional info for Pagos Online
-				'nombreComprador'		=> $order->billing_first_name,
+				'prueba'				=> $this->testmode,
+				'url_respuesta'			=> '',
+				'moneda'				=> 'COP',
+				'nombreComprador'		=> "$order->billing_first_name $order->billing_last_name",
 				'emailComprador'		=> $order->billing_email,
-
-				'last_name'				=> $order->billing_last_name,
-				'company'				=> $order->billing_company,
-				'address1'				=> $order->billing_address_1,
-				'address2'				=> $order->billing_address_2,
-				'city'					=> $order->billing_city,
-				'state'					=> $order->billing_state,
-				'zip'					=> $order->billing_postcode,
-				'country'				=> $order->billing_country,
+				'telefonoMovil'			=> $order->billing_phone,
+				'extra1'				=> "$order->billing_address_1, $order->billing_address_2, $order->billing_city"
 				
 			);
 
@@ -231,7 +225,7 @@ function init_po_gateway() {
 		 * Successful Payment!
 		 **/
 		function successful_request( $posted ) {			
-			
+			// TODO
 
 		}
 
