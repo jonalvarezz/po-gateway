@@ -190,7 +190,10 @@ function init_po_gateway() {
 
 			return '<form action="'. esc_url( $gateway_url ) .'" method="post" id="po_payment_form">
 					' . implode('', $po_args_array) . '
-					<input type="submit" class="button-alt" id="submit_payment_form" value="'.__('Pagar via Pagos Online', 'po_gateway').'" /> <a class="button cancel" href="'.esc_url($order->get_cancel_order_url()).'">'.__('Cancel order &amp; restore cart', 'po_gateway').'</a>
+					<button type="submit" class="btn btn-large btn-success" id="submit_payment_form" name="submit" />
+						'.__('Pagar via Pagos Online', 'po_gateway').'
+					</button>
+					<a class="btn btn-large btn-warning" href="'.esc_url($order->get_cancel_order_url()).'">'.__('Cancel order &amp; restore cart', 'po_gateway').'</a>
 					
 				</form>';
 
