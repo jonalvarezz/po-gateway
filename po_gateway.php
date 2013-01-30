@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: po_gateway
+Plugin Name: Jigoshop Pagos Online
 Plugin URI: https://github.com/jonalvarezz/po_gateway
 Description: Pagos Online Gateway for Jigoshop in Wordpress
 Version: 0.1
@@ -21,7 +21,7 @@ function init_po_gateway() {
 
 	// Add the gateway to JigoShop
 	function add_po_gateway( $methods ) {
-		$methods[] = 'po_gateway';
+		$methods[] = 'PagosOnline_Gateway';
 		return $methods;
 	}
 	add_filter( 'jigoshop_payment_gateways', 'add_po_gateway', 3 );
@@ -33,14 +33,18 @@ function init_po_gateway() {
 	 * This will usually be done on the WordPress 'init' action hook
 	 * We will load text domains for languages in the constructor as these also need to be on 'init'
 	 */
-	class po_gateway extends jigoshop_payment_gateway {
+	class PagosOnline_Gateway extends jigoshop_payment_gateway {
 	
-		public function __construct() {		
+		public function __construct() {
+
+			// load our text domains first for translations (constructor is called on the 'init' action hook)
+			load_plugin_textdomain( 'po_gateway', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 			
 			parent::__construct();
 
-			$this->id			= 'po_gateway';
-			$this->title 		= 'Pagos Online';
+			$this->id			= 'pagosonline';
+			$this->title 		= 'Pagos Online';			
+			$this->description 	= Jigoshop_Base::get_options()->get_option('po_gateway_description');
 	  		$this->enabled		= Jigoshop_Base::get_options()->get_option('po_gateway_enabled');
 	  		$this->id			= Jigoshop_Base::get_options()->get_option('po_gateway_id');
 	  		$this->key			= Jigoshop_Base::get_options()->get_option('po_gateway_key');
@@ -68,7 +72,11 @@ function init_po_gateway() {
 			$defaults = array();
 		
 			// Define the Section name for the Jigoshop_Options
-			$defaults[] = array( 'name' => __('PO Gateway', 'po_gateway'), 'type' => 'title', 'desc' => __('Pagos Online Gateway for Jigoshop in Wordpress.', 'po_gateway') );
+			$defaults[] = array(
+				'name' => __('PO Gateway', 'po_gateway'),
+				'type' => 'title',
+				'desc' => __('Pagos Online Gateway for Jigoshop in Wordpress.', 'po_gateway')
+			);
 		
 			// List each option in order of appearance with details
 			$defaults[] = array(
@@ -104,6 +112,15 @@ function init_po_gateway() {
 				'id' 		=> 'po_gateway_id',
 				'std' 		=> __('2','po_gateway'),
 				'type' 		=> 'text'
+			);
+
+			$defaults[] = array(
+				'name'		=> __('Descripcion','po_gateway'),
+				'desc' 		=> '',
+				'tip' 		=> __('Esta es la descripcion que el usuario ve durante el checkout.','po_gateway'),
+				'id' 		=> 'po_gateway_description',
+				'std' 		=> __("Pagar via Pagos Online", 'po_gateway'),
+				'type' 		=> 'longtext'
 			);
 			
 			$defaults[] = array(
@@ -195,12 +212,12 @@ function init_po_gateway() {
 
 			return '<form action="'.$gateway_url.'" method="post" id="po_payment_form">
 					' . implode('', $po_args_array) . '
-					<input type="submit" class="button-alt" id="submit_po_payment_form" value="'.__('Pagar via Pagos Online', 'jigoshop').'" /> <a class="button cancel" href="'.esc_url($order->get_cancel_order_url()).'">'.__('Cancel order &amp; restore cart', 'jigoshop').'</a>
+					<input type="submit" class="button-alt" id="submit_po_payment_form" value="'.__('Pagar via Pagos Online', 'jigoshop').'" /> <a class="button cancel" href="'.esc_url($order->get_cancel_order_url()).'">'.__('Cancel order &amp; restore cart', 'po_gateway').'</a>
 					<script type="text/javascript">
 						jQuery(function(){
 							jQuery("body").block(
 								{
-									message: "<img src=\"'.jigoshop::assets_url().'/assets/images/ajax-loader.gif\" alt=\"Redireccionando...\" />'.__('Gracias por tu orden. Ahora te estamos redireccionando a Pagos Online para realizar el pago.', 'jigoshop').'",
+									message: "<img src=\"'.jigoshop::assets_url().'/assets/images/ajax-loader.gif\" alt=\"Redireccionando...\" />'.__('Gracias por tu orden. Ahora te estamos redireccionando a Pagos Online para realizar el pago.', 'po_gateway').'",
 									overlayCSS:
 									{
 										background: "#fff",
@@ -228,7 +245,7 @@ function init_po_gateway() {
 		 **/
 		function receipt_page( $order ) {
 
-			echo '<p>'.__('Gracias por tu orden, por favor de clic en el botón de abajo para pagar por medio de Pagos Online.', 'jigoshop').'</p>';
+			echo '<p>'.__('Gracias por tu orden, por favor de clic en el botón de abajo para pagar por medio de Pagos Online.', 'po_gateway').'</p>';
 
 			echo $this->generate_po_form( $order );
 
