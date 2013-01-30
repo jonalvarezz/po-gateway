@@ -55,8 +55,8 @@ function init_po_gateway() {
 
 			// Actions
 			// add_action('init', array(&$this, 'check_ipn_response') );
-			add_action('valid-po-ipn-request', array(&$this, 'successful_request') );
-			add_action('receipt_po_gateway', array(&$this, 'receipt_page'));
+			// add_action('valid-po-ipn-request', array(&$this, 'successful_request') );
+			add_action('receipt_pagosonline', array(&$this, 'receipt_page'));
 	  		
 		}
 		
@@ -154,20 +154,18 @@ function init_po_gateway() {
 
 			$order = new jigoshop_order( $order_id );
 	        
-	        $subtotal = (float)(Jigoshop_Base::get_options()->get_option('jigoshop_prices_include_tax') == 'yes' ? (float)$order->order_subtotal + (float)$order->order_tax : $order->order_subtotal);
-
 	        $gateway_url = ($this->testmode == 'yes') ? $this->testurl : $this->liveurl;
 
 			$po_args = array(
 
 				// Pagos Online API
-				'usuarioId'				=> $this->id,
+				'usuarioId'				=> $this->userid,
 				'refVenta'				=> $order->order_key,
 				'descripcion'			=> 'descripcion',
 				'valor'					=> $order->order_total,
-				'iva'					=> ($order->order_total/1.16),
-				'baseDevolucionIva'		=> $order->order_total - ($order->order_total/1.16),
-				'firma'					=> md5("$llave_encripcion~$usuarioId~$refVenta~$valor~$moneda"),
+				'iva'					=> '0',
+				'baseDevolucionIva'		=> $order->order_total,
+				'firma'					=> md5("firmaencripcion"),
 				'url_respuesta'			=> '',
 				'moneda'				=> 'COP',
 
@@ -190,31 +188,10 @@ function init_po_gateway() {
 				$po_args_array[] = '<input type="hidden" name="'.esc_attr($key).'" value="'.esc_attr($value).'" />';
 			}
 
-			return '<form action="'. esc_url( $gateway_url ).'" method="post" id="po_payment_form">
+			return '<form action="'. esc_url( $gateway_url ) .'" method="post" id="po_payment_form">
 					' . implode('', $po_args_array) . '
 					<input type="submit" class="button-alt" id="submit_payment_form" value="'.__('Pagar via Pagos Online', 'po_gateway').'" /> <a class="button cancel" href="'.esc_url($order->get_cancel_order_url()).'">'.__('Cancel order &amp; restore cart', 'po_gateway').'</a>
-					<script type="text/javascript">
-						jQuery(function(){
-							jQuery("body").block(
-								{
-									message: "<img src=\"'.jigoshop::assets_url().'/assets/images/ajax-loader.gif\" alt=\"Redireccionando...\" />'.__('Gracias por tu orden. Ahora te estamos redireccionando a Pagos Online para realizar el pago.', 'po_gateway').'",
-									overlayCSS:
-									{
-										background: "#fff",
-										opacity: 0.6
-									},
-									css: {
-										padding:		20,
-										textAlign:	  "center",
-										color:		  "#555",
-										border:		 "3px solid #aaa",
-										backgroundColor:"#fff",
-										cursor:		 "wait"
-									}
-								});
-							jQuery("#submit_payment_form").click();
-						});
-					</script>
+					
 				</form>';
 
 		}
