@@ -160,12 +160,12 @@ function init_po_gateway() {
 
 				// Pagos Online API
 				'usuarioId'				=> $this->userid,
+				'firma'					=> $this->key,
 				'refVenta'				=> $order->order_key,
 				'descripcion'			=> 'descripcion',
 				'valor'					=> $order->order_total,
 				'iva'					=> '0',
 				'baseDevolucionIva'		=> $order->order_total,
-				'firma'					=> md5("firmaencripcion"),
 				'url_respuesta'			=> '',
 				'moneda'				=> 'COP',
 
@@ -182,6 +182,7 @@ function init_po_gateway() {
 				'email'					=> $order->billing_email,
 			);
 
+			$po_args['firma'] = $this->gen_digital_sign($po_args);
 			$po_args_array = array();
 
 			foreach ($po_args as $key => $value) {
@@ -234,6 +235,21 @@ function init_po_gateway() {
 		 **/
 		function payment_fields() {
 			if ($this->description) echo wpautop(wptexturize($this->description));
+		}
+
+		/**
+		 * Digital sign requeried for Pagos Online Api
+		 **/
+		function gen_digital_sign( $data ) {
+			$uid = $data['usuarioId'];
+			$sign = $data['firma'];
+			$rventa = $data['refVenta'];
+			$valor = $data['valor'];
+			$mon = 'COP';
+
+			$sign_s = "$sign~$uid~$rventa~$valor~$mon";
+
+			return md5( $sign_s );
 		}
 		 
 	}   /* End of Class definition for the Gateway */
