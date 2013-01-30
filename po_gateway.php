@@ -162,7 +162,7 @@ function init_po_gateway() {
 				// Pagos Online API
 				'usuarioId'				=> $this->userid,
 				'firma'					=> $this->key,
-				'refVenta'				=> $order->order_key,
+				'refVenta'				=> $order->id,
 				'descripcion'			=> $this->get_articles_detail($order),
 				'valor'					=> $order->order_total,				
 
@@ -247,7 +247,7 @@ function init_po_gateway() {
 			$sign = $data['firma'];
 			$rventa = $data['refVenta'];
 			$valor = $data['valor'];
-			$mon = 'COP';
+			$mon = $data['moneda'];
 
 			$sign_s = "$sign~$uid~$rventa~$valor~$mon";
 
