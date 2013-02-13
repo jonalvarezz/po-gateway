@@ -157,12 +157,14 @@ function init_po_gateway() {
 	        
 	        $gateway_url = ($this->testmode == 'yes') ? $this->testurl : $this->liveurl;
 
+	        $refventa_aux = time();
+
 			$po_args = array(
 
 				// Pagos Online API
 				'usuarioId'				=> $this->userid,
 				'firma'					=> $this->key,
-				'refVenta'				=> "$order->id".time(),
+				'refVenta'				=> "$order->id-$refventa_aux",
 				'descripcion'			=> $this->get_articles_detail($order),
 				'valor'					=> $order->order_total,				
 
