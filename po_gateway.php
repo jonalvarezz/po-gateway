@@ -162,7 +162,7 @@ function init_po_gateway() {
 				// Pagos Online API
 				'usuarioId'				=> $this->userid,
 				'firma'					=> $this->key,
-				'refVenta'				=> $order->id,
+				'refVenta'				=> "$order->id".time(),
 				'descripcion'			=> $this->get_articles_detail($order),
 				'valor'					=> $order->order_total,				
 
