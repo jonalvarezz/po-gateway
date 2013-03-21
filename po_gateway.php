@@ -180,7 +180,7 @@ function init_po_gateway() {
 
 				// Optional info for Pagos Online
 				'prueba'				=> ($this->testmode == 'yes') ? 1 : 0,
-				'url_respuesta'			=> '',
+				'url_respuesta'			=> $url_respuesta,
 				'moneda'				=> 'COP',
 				'nombreComprador'		=> "$order->billing_first_name $order->billing_last_name",
 				'emailComprador'		=> $order->billing_email,
