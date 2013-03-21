@@ -163,6 +163,9 @@ function init_po_gateway() {
 	        $baseiva = round($order->order_total / 1.16, 2, PHP_ROUND_HALF_EVEN);
 	        $iva = $order->order_total - $baseiva;
 
+	        //Sending po respone to index page
+	        $url_respuesta = get_bloginfo( 'wpurl' );
+
 			$po_args = array(
 
 				// Pagos Online API
@@ -171,7 +174,7 @@ function init_po_gateway() {
 				'refVenta'				=> "$order->id-$refventa_aux",
 				'descripcion'			=> $this->get_articles_detail($order),
 				'valor'					=> $order->order_total,			
-				
+
 				'iva'					=> $iva,
 				'baseDevolucionIva'		=> $baseiva,
 
