@@ -52,7 +52,9 @@ function init_po_gateway() {
 			$this->title 		= Jigoshop_Base::get_options()->get_option('po_gateway_title');			
 			$this->description 	= Jigoshop_Base::get_options()->get_option('po_gateway_description');	  		
 	  		$this->userid		= Jigoshop_Base::get_options()->get_option('po_gateway_userid');
-	  		$this->key			= Jigoshop_Base::get_options()->get_option('po_gateway_key');	  		
+	  		$this->key			= Jigoshop_Base::get_options()->get_option('po_gateway_key');
+
+	  		$this->responsepage	= Jigoshop_Base::get_options()->get_option('po_gateway_response_page_id');  		
 
 			// Actions
 			// add_action('init', array(&$this, 'check_ipn_response') );
@@ -146,6 +148,15 @@ function init_po_gateway() {
 				'type' 		=> 'text'
 			);
 
+			$defaults[] = array(
+				'name'		=> __('Página de Respuesta','po_gateway'),
+				'desc' 		=> __('Página de respuesta de pagos online. Necesaria','jigoshop'),
+				'tip' 		=> '',
+				'id' 		=> 'po_gateway_response_page_id',
+				'type' 		=> 'single_select_page',
+				'std' 		=> ''
+			);
+
 			return $defaults;
 			
 		}
@@ -164,7 +175,7 @@ function init_po_gateway() {
 	        $iva = $order->order_total - $baseiva;
 
 	        //Sending po respone to index page
-	        $url_respuesta = get_bloginfo( 'wpurl' );
+	        $url_respuesta = get_permalink($this->responsepage);
 
 			$po_args = array(
 
