@@ -160,7 +160,7 @@ function init_po_gateway() {
 	        $refventa_aux = time();
 
 	        //Handling tax IVA, Colombia only.
-	        $baseiva = round($order->order_total / 1.16, 2, PHP_ROUND_HALF_EVEN);
+	        $baseiva = round($order->order_total / 1.16, 2 );
 	        $iva = $order->order_total - $baseiva;
 
 	        //Sending po respone to index page
@@ -175,8 +175,9 @@ function init_po_gateway() {
 				'descripcion'			=> $this->get_articles_detail($order),
 				'valor'					=> $order->order_total,			
 
-				'iva'					=> $iva,
-				'baseDevolucionIva'		=> $baseiva,
+				//Pagos Online must recibe 2 decimal digits
+				'iva'					=> number_format($iva, 2, '.', ''),
+				'baseDevolucionIva'		=> number_format($baseiva, 2, '.', ''),
 
 				// Optional info for Pagos Online
 				'prueba'				=> ($this->testmode == 'yes') ? 1 : 0,
