@@ -313,7 +313,7 @@ function init_po_gateway() {
 						$title .= ' (' . jigoshop_get_formatted_variation( $item['variation'], true) . ')';
 
 					}
-					$amount = number_format( apply_filters( 'jigoshop_paypal_adjust_item_price' ,$_product->get_price_excluding_tax(), $item, 10, 2 ), 2);
+					$amount = number_format( apply_filters( 'jigoshop_paypal_adjust_item_price' ,$_product->get_price(), $item, 10, 2 ), 2);
 
 					$out .= $item['qty'];
 					$out .= " $title ($amount c/u)\n";
