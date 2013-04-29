@@ -297,8 +297,7 @@ function init_po_gateway() {
 		 
 
 		function get_articles_detail($order) {			
-			$out  = 'Tu compra';
-			$out .= "\n";
+			$out  = '';
 			if (sizeof($order->items)>0) : foreach ($order->items as $item) :
 
 				$_product = $order->get_product_from_item( $item );
@@ -321,6 +320,7 @@ function init_po_gateway() {
 				endif;
 			endforeach; endif;
 
+			$out .= ' - ' . get_bloginfo();
 			return $out;
 		}
 
