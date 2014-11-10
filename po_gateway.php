@@ -347,7 +347,7 @@ function init_po_gateway() {
 					
 					<script type="text/javascript">
 						(function($){
-							jQuery("body").block(
+							$("body").block(
 								{
 									message: "<img src=\"'.jigoshop::assets_url().'/assets/images/ajax-loader.gif\" alt=\"Redireccionando...\" />'.__('Gracias por su pedido. Ahora lo estamos redireccionando al sistema de pagos Pagos Online.', 'po_gateway').'",
 									overlayCSS:
@@ -364,7 +364,7 @@ function init_po_gateway() {
 										cursor:		 "wait"
 									}
 								});
-							jQuery("#submit_payment_form").click();
+							$("#submit_payment_form").click();
 						})(jQuery);
 					</script>
 					</form>';
