@@ -325,6 +325,12 @@ function init_po_gateway() {
 				
 			);
 
+			// If discount, total amount already include it
+			// anyway, notify it in an extra information field
+			if( $order->order_discount ) {
+				$po_args['extra2'] = '(- $' . $order->order_discount . ') de descuento';
+			}
+
 			$po_args['firma'] = $this->gen_digital_sign($po_args);
 			$po_args_array = array();
 
@@ -436,7 +442,7 @@ function init_po_gateway() {
 						$title .= ' (' . jigoshop_get_formatted_variation( $item['variation'], true) . ')';
 
 					}
-					$amount = number_format( apply_filters( 'jigoshop_paypal_adjust_item_price' ,$_product->get_price(), $item, 10, 2 ), 2);
+					$amount = number_format( apply_filters( 'jigoshop_po_adjust_item_price' ,$_product->get_price(), $item, 10, 2 ), 2);
 
 					$out .= $item['qty'];
 					$out .= " $title ($amount c/u)\n";
@@ -444,7 +450,11 @@ function init_po_gateway() {
 				endif;
 			endforeach; endif;
 
-			$out .= ' - ' . get_bloginfo();
+			if( $order->order_discount ) {
+				$out .= ' (- ' . number_format($order->order_discount, 2) . ' Descuento)'; 
+			}
+
+			$out .= ' - Desde ' . get_bloginfo();
 			return $out;
 		}
 
