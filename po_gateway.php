@@ -56,13 +56,137 @@ function init_po_gateway() {
 
 	  		$this->responsepage	= Jigoshop_Base::get_options()->get_option('po_gateway_response_page_id');  		
 
+
 			// Actions
 			// add_action('init', array(&$this, 'check_ipn_response') );
 			// add_action('valid-po-ipn-request', array(&$this, 'successful_request') );
 			add_action('receipt_pagosonline', array(&$this, 'receipt_page'));
 	  		
 		}
+
+		/**
+		 * Getter for Pagos Online messages cod for tipo_medio_pago code
+		 * @var Int
+		 * @return String
+		 */	
+		public function get_tipos_medios_de_pago( $index ) {
+			$tipos_medios_pago = array(
+				2 => 'Tarjetas de Crédito',
+				3 => 'Verified by VISA',
+				4 => 'PSE',
+				5 => 'Debito ACH',
+				7 => 'Pago en efectivo',
+				8 => 'Pago referenciado'
+			);
+
+			if( !is_numeric($index) )
+				return '';
+
+			return $tipos_medios_pago[intval($index)];
+		}
+
+		/**
+		 * Getter for Pagos Online messages cod for medio_pago code
+		 * @var Int
+		 * @return String
+		 */	
+		public function get_medios_de_pago( $index ) {
+			$medios_pago = array(
+				10 => 'VISA',
+				11 => 'MASTERCARD',
+				12 => 'AMEX',
+				22 => 'DINERS',
+				24 => 'Verified by VISA',
+				25 => 'PSE',
+				27 => 'VISA Debito',
+				30 => 'Efecty',
+				31 => 'Pago referenciado',
+			);
+
+			if( !is_numeric($index) )
+				return '';
+
+			return $medios_pago[intval($index)];
+		}
 		
+		/**
+		 * Getter for Pagos Online messages cod for estado_pol code
+		 * @var Int
+		 * @return String
+		 */	
+		public function get_estado_pol( $index ) {
+			$estado_pol = array(
+				'',
+				'Sin abrir',
+				'Abierta',
+				'Pagada y abonada',
+				'Cancelada',
+				'Rechazada',
+				'En validación',
+				'Reversada',
+				'Reversada fraudulenta',
+				'Enviada ent. Financiera',
+				'Capturando datos tarjeta de crédito',
+				'Esperando confirmación sistema PSE',
+				'Activa Débitos ACH',
+				'Confirmando pago Efecty',
+				'Impreso',
+				'Debito ACH Registrado'
+			);
+
+			if( !is_numeric($index) )
+				return '';
+
+			return $estado_pol[intval($index)];
+		}
+
+		/**
+		 * Getter for Pagos Online messages cod for codigo_respuesta_pol code
+		 * @var Int
+		 * @return String
+		 */	
+		public function get_codigo_respuesta_pol( $index ) {
+			$codigo_respuesta_pol = array(
+				1 => 'Transacción aprobada',
+				2 => 'Pago cancelado por el usuario',
+				3 => 'Pago cancelado por el usuario durante validación',
+				4 => 'Transacción rechazada por la entidad',
+				5 => 'Transacción declinada por la entidad',
+				6 => 'Fondos insuficientes',
+				7 => 'Tarjeta invalida',
+				8 => 'Acuda a su entidad',
+				9 => 'Tarjeta vencida',
+				10 => 'Tarjeta restringida',
+				11 => 'Discrecional POL',
+				12 => 'Fecha de expiración o campo seg. Inválidos',
+				13 => 'Repita transacción',
+				14 => 'Transacción inválida',
+				15 => 'Transacción en proceso de validación',
+				16 => 'Combinación usuario-contraseña inválidos',
+				17 => 'Monto excede máximo permitido por entidad',
+				18 => 'Documento de identificación inválido',
+				19 => 'Transacción abandonada capturando datos TC',
+				20 => 'Transacción abandonada',
+				21 => 'Imposible reversar transacción',
+				22 => 'Tarjeta no autorizada para realizar compras por internet',
+				23 => 'Transacción rechazada',
+				24 => 'Transacción parcial aprobada',
+				25 => 'Rechazada por no confirmación',
+				26 => 'Comprobante generado, esperando pago en banco',
+				9994 => 'Transacción pendiente por confirmar',
+				9995 => 'Certificado digital no encontrado',
+				9996 => 'Entidad no responde',
+				9997 => 'Error de mensajería con la entidad financiera',
+				9998 => 'Error en la entidad financiera',
+				9999 => 'Error no especificado',
+			);
+
+			if( !is_numeric($index) )
+				return '';
+
+			return $codigo_respuesta_pol[intval($index)];
+		}
+
 
 		/**
 		 * Default Option settings for WordPress Settings API using the Jigoshop_Options class
