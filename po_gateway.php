@@ -9,8 +9,8 @@ Tested up to: 3.5
 Required Jigoshop Version: 1.3
 Text Domain: po_gateway
 Domain Path: /languages/
-Author: Tu Negocio Web en 1 dia - @jonalvarezz
-Author URI: http://tunegocioweben1dia.com
+Author: Jonathan Álvarez G
+Author URI: http://jonalvarezz.com
 */
 
 add_action( 'plugins_loaded', 'init_po_gateway' );
